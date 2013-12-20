@@ -16,6 +16,12 @@ import SimpleHTTPServer
 import SocketServer
 import urllib2
 
+#import sqlite3
+#import MySQLdb
+
+import psycopg2
+
+
 
 #
 # Config
@@ -274,6 +280,7 @@ class CGMinerRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         self.wfile.write(html)
 
 
+    
 #
 # usage: cgminer-monitor.py [command] [parameter]
 # No arguments: monitor + http server mode. Press CTRL+C to stop.
@@ -284,17 +291,48 @@ if __name__ == "__main__":
     command = sys.argv[1] if len(sys.argv) > 1 else None
     parameter = sys.argv[2] if len(sys.argv) > 2 else None
 
-    client = CgminerClient(cgminer_host, cgminer_port)
+#db = MySQLdb.connect(host="localhost", # your host, usually localhost
+#                     user="cgblackbox", # your username
+#                      passwd="SimplePassword123", # your password
+#                      db="cgblackbox") # name of the data base
 
-    if command:
+
+        
+    client = CgminerClient(cgminer_host, cgminer_port)
+    
+#    conn = sqlite3.connect(host="localhost", user="cgblackbox", password="SimplePassword123", database="cgblackbox")
+
+    #conn = sqlite3.connect('localhost.db')
+
+    #c = conn.cursor()
+
+    #c.execute( "INSERT INTO `cgblackbox`.`rawdatatable` (`rawdata` , `ID`) VALUES (\"test1\", 1)" )
+
+try:
+    conn = psycopg2.connect("dbname='cgblackbox' user='postgres' host='localhost' password='SimplePassword123'")
+except:
+   print "I am unable to connect to the database"
+
+cur = conn.cursor()
+cur.execute("""INSERT INTO test(
+            text, "ID")
+    VALUES ("test", 1);""")
+cur.execute("""SELECT * from test""")
+rows = cur.fetchall()
+print "\nShow me the databases:\n"
+for row in rows:
+    print "   ", row[0]
+
+if command:
         # An argument was specified, ask cgminer and exit
-        result = client.command(command, parameter)
-        print result if result else 'Cannot get valid response from cgminer'
-    else:
+    result = client.command(command, parameter)
+    print result if result else 'Cannot get valid response from cgminer'
+else:
         # No argument, start the monitor and the http server
-        try:
+    try:
             server = SocketServer.TCPServer((monitor_http_interface, monitor_http_port), CGMinerRequestHandler)
             threading.Thread(target=server.serve_forever).start()
             StartMonitor(client)
-        except KeyboardInterrupt:
+    except KeyboardInterrupt as k:
+            print k
             server.shutdown()
