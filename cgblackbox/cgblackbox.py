@@ -19,7 +19,7 @@ import urllib2
 #import sqlite3
 #import MySQLdb
 
-import psycopg2
+#import psycopg2
 
 
 
@@ -27,8 +27,9 @@ import psycopg2
 # Config
 #
 
-cgminer_host = '192.168.0.199'
-cgminer_port = 4028
+cgminer_host = 'rebelalliancegoldsquadron.no-ip.biz' #jeffs no-ip.biz address
+#cgminer_host = '216.105.71.69'
+cgminer_port = 4028 #4028 for the 7850's #4029 for the 7970's
 email_smtp_server = 'smtp.gmail.com:587'
 email_login = 'mylogin'
 email_password = 'mypassword'
@@ -291,6 +292,7 @@ if __name__ == "__main__":
     command = sys.argv[1] if len(sys.argv) > 1 else None
     parameter = sys.argv[2] if len(sys.argv) > 2 else None
 
+#didnt work
 #db = MySQLdb.connect(host="localhost", # your host, usually localhost
 #                     user="cgblackbox", # your username
 #                      passwd="SimplePassword123", # your password
@@ -300,6 +302,7 @@ if __name__ == "__main__":
         
     client = CgminerClient(cgminer_host, cgminer_port)
     
+#didnt work
 #    conn = sqlite3.connect(host="localhost", user="cgblackbox", password="SimplePassword123", database="cgblackbox")
 
     #conn = sqlite3.connect('localhost.db')
@@ -308,25 +311,33 @@ if __name__ == "__main__":
 
     #c.execute( "INSERT INTO `cgblackbox`.`rawdatatable` (`rawdata` , `ID`) VALUES (\"test1\", 1)" )
 
-try:
-    conn = psycopg2.connect("dbname='cgblackbox' user='postgres' host='localhost' password='SimplePassword123'")
-except:
-   print "I am unable to connect to the database"
-
-cur = conn.cursor()
-cur.execute("""INSERT INTO test(
-            text, "ID")
-    VALUES ("test", 1);""")
-cur.execute("""SELECT * from test""")
-rows = cur.fetchall()
-print "\nShow me the databases:\n"
-for row in rows:
-    print "   ", row[0]
+#got a request to work but couldn't format the SQL properly
+#try:
+#    conn = psycopg2.connect("dbname='cgblackbox' user='postgres' host='localhost' password='SimplePassword123'")
+#except:
+#   print "I am unable to connect to the database"
+#
+#cur = conn.cursor()
+#cur.execute("""INSERT INTO test(
+#            text, "ID")
+#    VALUES ("test", 1);""")
+#cur.execute("""SELECT * from test""")
+#rows = cur.fetchall()
+#print "\nShow me the databases:\n"
+#for row in rows:
+#    print "   ", row[0]
 
 if command:
         # An argument was specified, ask cgminer and exit
     result = client.command(command, parameter)
     print result if result else 'Cannot get valid response from cgminer'
+
+    #j = json.loads(result)
+    #print j['MHS av']
+    print "MHS Average: ", result[u'SUMMARY'][0][u'MHS av']
+    print "MH Total: ", result[u'SUMMARY'][0][u'Total MH']
+    print "testing"
+
 else:
         # No argument, start the monitor and the http server
     try:

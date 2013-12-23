@@ -13,7 +13,7 @@
     <Name>cgblackbox</Name>
     <RootNamespace>cgblackbox</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>stats</CommandLineArguments>
+    <CommandLineArguments>summary</CommandLineArguments>
     <InterpreterPath />
     <InterpreterArguments />
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
